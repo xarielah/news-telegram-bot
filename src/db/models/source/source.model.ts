@@ -8,13 +8,13 @@ const sourceSchema = new Schema(
       unique: true,
       required: true,
     },
-    sourceIds: {
+    sources: {
       type: Array,
       required: true,
     },
-    active: {
-      type: Boolean,
-      default: true,
+    pageSize: {
+      type: Number,
+      default: 5,
     },
   },
   { timestamps: true }

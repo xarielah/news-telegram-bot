@@ -1,7 +1,7 @@
-export type SourceRecord = {
+export type CategoryRecord = {
   _id: string;
   userId: string;
-  sources: string[];
+  categories: string[];
   pageSize: number;
   createdAt: string;
   updatedAt: string;

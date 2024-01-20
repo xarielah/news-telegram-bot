@@ -2,6 +2,9 @@ import Logger from "../../../logger/logger";
 import { Audit } from "./audit.model";
 import { AuditInput } from "./audit.type";
 
+/**
+ * Audit action class to add audit logs of the important operations to the database
+ */
 export default class AuditAction {
   private static logger = new Logger("Audit");
   public static async add(auditInput: AuditInput): Promise<void> {

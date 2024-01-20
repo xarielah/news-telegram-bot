@@ -2,6 +2,8 @@ import User from "../db/models/user/user";
 import { RegisteredUser } from "../db/models/user/user.model";
 import { RegisterUser } from "../db/models/user/user.type";
 import Logger from "../logger/logger";
+import NewsAPI from "../news/news-api";
+import { Article, NewsFetchResponse } from "../news/news-api.type";
 import telegramApiConfig from "./telegram-api.config";
 import TelegramBOT from "node-telegram-bot-api";
 
@@ -23,6 +25,45 @@ export default class TelegramAPI {
   public async me(): Promise<void> {
     const response = await TelegramAPI.bot.getMe();
     this.logger.log(`Logged in as ${response.id + ":" + response.username}`);
+  }
+
+  /**
+   * Publish news to all active users
+   */
+  public async publishNews(): Promise<void> {
+    const users = await User.getAllActive();
+
+    for (let user of users) {
+      const sourceNews = await NewsAPI.getSourceNews(user.userId);
+      const categoryNews = await NewsAPI.getCategoryNews(user.userId);
+
+      await this.sendLetter(user.chatId, sourceNews);
+      await this.sendLetter(user.chatId, categoryNews);
+    }
+  }
+
+  private async sendLetter(targetId: number, news: NewsFetchResponse) {
+    if (news.totalResults === 0) return;
+    const messagesArray = this.formatNewsMessage(news.articles);
+    for (let msg of messagesArray) {
+      TelegramAPI.bot.sendMessage(targetId, msg);
+    }
+  }
+
+  private formatNewsMessage(articles: Article[]): string[] {
+    let messagesArray: string[] = [];
+    let message = "";
+    let count = 0;
+    for (let article of articles) {
+      message += `- ${article.title || "No title"}\n\n${
+        article.description || "No description"
+      }\n\n${article.url || ""}\n\n`;
+      if (count % 3 === 0 || count === articles.length - 1) {
+        messagesArray.push(message);
+        message = "";
+      }
+    }
+    return messagesArray;
   }
 
   /**

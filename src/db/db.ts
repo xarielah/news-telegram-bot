@@ -1,18 +1,13 @@
 import mongoose from "mongoose";
 import dbConfig from "./db.config";
 import Logger from "../logger/logger";
-import { RegisteredUser } from "./models/user/user.model";
 
+/**
+ * Responsible for connecting to the database and caching the connection in memory
+ */
 export class MongodbConnection {
   static instance: Promise<typeof mongoose>;
   private static logger = new Logger("Database");
-
-  static getInstance() {
-    if (!MongodbConnection.instance) {
-      MongodbConnection.instance = MongodbConnection.connect();
-    }
-    return MongodbConnection.instance;
-  }
 
   static async connect(): Promise<typeof mongoose> {
     mongoose.connection.on("connected", () => {
@@ -28,7 +23,9 @@ export class MongodbConnection {
     });
 
     try {
-      await mongoose.connect(dbConfig.uri);
+      if (MongodbConnection.instance === undefined) {
+        await mongoose.connect(dbConfig.uri);
+      }
     } catch (error) {
       this.logger.log(`Error connecting to MongoDB cluster: ${error}`, "error");
     }
