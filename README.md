@@ -4,3 +4,4 @@
 3. Add support for (2) in commands of the bot using BotFather
 4. Build a Webby localhost panel to control users and/or preferences
 5. Add support for editing categories and sources in chat commands
+6. Add backend endpoints for the localhost webby panel
