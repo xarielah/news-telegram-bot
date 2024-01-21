@@ -106,9 +106,6 @@ export default class TelegramAPI {
    */
   private registerCommand(command: string, callback: Function): void {
     this.logger.log("registering command: " + command, null, null, false);
-    TelegramAPI.bot.setMyCommands([
-      { command, description: "Description not available" },
-    ]);
 
     TelegramAPI.bot.onText(new RegExp(`/${command}`), (msg, match) => {
       this.logger.log(
@@ -125,17 +122,16 @@ export default class TelegramAPI {
     msg: TelegramBOT.Message,
     match: RegExpExecArray
   ) {
-    const limit = match.input.split(" ")[1];
+    let limit: string | number = match.input.split(" ")[1];
     if (isNaN(+limit) || +limit < 1 || +limit > 20) {
       return TelegramAPI.bot.sendMessage(
         msg.chat.id,
         `Usage: /setsourcelimit <1-20>`
       );
     }
-    const result = await NewsSource.setPageSize(
-      msg.from.id,
-      Math.floor(+limit)
-    );
+
+    limit = Math.floor(+limit);
+    const result = await NewsSource.setPageSize(msg.from.id, limit);
 
     if (result === 1) {
       TelegramAPI.bot.sendMessage(
@@ -154,7 +150,7 @@ export default class TelegramAPI {
     msg: TelegramBOT.Message,
     match: RegExpExecArray
   ) {
-    const limit = match.input.split(" ")[1];
+    let limit: string | number = match.input.split(" ")[1];
     if (isNaN(+limit) || +limit < 1 || +limit > 20) {
       TelegramAPI.bot.sendMessage(
         msg.chat.id,
@@ -162,10 +158,9 @@ export default class TelegramAPI {
       );
       return;
     }
-    const result = await NewsCategory.setPageSize(
-      msg.from.id,
-      Math.floor(+limit)
-    );
+
+    limit = Math.floor(+limit);
+    const result = await NewsCategory.setPageSize(msg.from.id, limit);
 
     if (result === 1) {
       TelegramAPI.bot.sendMessage(
