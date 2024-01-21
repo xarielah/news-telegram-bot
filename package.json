@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "start tsc -w && nodemon dist/main.js",
     "compile": "tsc",
-    "prod": "pm2 restart NewsBot"
+    "prod": "pm2 start ./dist/main.js --name NewsBot"
   },
   "keywords": [],
   "author": "",
