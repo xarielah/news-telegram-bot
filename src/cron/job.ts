@@ -15,7 +15,7 @@ export default class CronJob {
 
     const api = new TelegramAPI();
     api.me();
-    api.publishNews();
+    // api.publishNews();
 
     // cron.schedule("*/5 * * * * *", () => {
     //   // Whatever we do here, it'll be executed with interval that we scheduled

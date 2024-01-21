@@ -4,7 +4,7 @@ import { Schema, model, models } from "mongoose";
 const sourceSchema = new Schema(
   {
     userId: {
-      type: String,
+      type: Number,
       unique: true,
       required: true,
     },

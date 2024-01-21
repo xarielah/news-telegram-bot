@@ -7,11 +7,7 @@ export default class NewsCategory {
 
   public static async get(userId: number): Promise<CategoryRecord> {
     try {
-      const foundCategories = await Category.findOne({ userId });
-      if (!foundCategories) {
-        await this.create(userId);
-        return await this.get(userId);
-      }
+      const foundCategories = await this.findOrCreate(userId);
 
       return foundCategories;
     } catch (error) {
@@ -23,6 +19,10 @@ export default class NewsCategory {
     }
   }
 
+  private static async findOrCreate(userId: number): Promise<CategoryRecord> {
+    return (await Category.findOne({ userId })) || (await this.create(userId));
+  }
+
   /**
    * Adds a category to the user's categories list
    * @param {string} userId
@@ -31,11 +31,7 @@ export default class NewsCategory {
    */
   public static async add(userId: number, category: string): Promise<boolean> {
     try {
-      const foundCategories = await Category.findOne({ userId });
-      if (!foundCategories) {
-        await this.create(userId, [category]);
-        return true;
-      }
+      const foundCategories = await this.findOrCreate(userId);
 
       const categories = foundCategories.categories;
       if (categories.includes(category)) return false;
@@ -60,20 +56,20 @@ export default class NewsCategory {
   public static async create(
     userId: number,
     categories?: string[]
-  ): Promise<boolean> {
+  ): Promise<CategoryRecord> {
     try {
       const category = new Category({ userId, categories: categories || [] });
-      await category.save();
+      const newCat = await category.save({ new: true });
       this.logger.log(
         `Categories record for user ID \"${userId}\" created successfuly.`
       );
-      return true;
+      return newCat;
     } catch (error) {
       this.logger.log(
         "Creating category resulted with an error: " + error,
         "error"
       );
-      return false;
+      return null;
     }
   }
 
@@ -114,11 +110,7 @@ export default class NewsCategory {
     category: string
   ): Promise<boolean> {
     try {
-      const foundCategories = await Category.findOne({ userId });
-      if (!foundCategories) {
-        await this.create(userId);
-        return true;
-      }
+      const foundCategories = await this.findOrCreate(userId);
 
       const categories = foundCategories.categories;
       if (!categories.includes(category)) return false;
@@ -134,6 +126,33 @@ export default class NewsCategory {
         "error"
       );
       return false;
+    }
+  }
+
+  /**
+   * Updates a user's sources limit, returns -1 if limit is not a number
+   * Returns 1 if user's source limit is updated successfuly
+   * Returns 0 for any other error
+   * @param userId
+   * @param limit
+   * @returns -1 | 0 | 1
+   */
+  public static async setPageSize(
+    userId: number,
+    limit: number | string
+  ): Promise<0 | 1> {
+    try {
+      await Category.findOneAndUpdate({ userId }, { pageSize: +limit });
+      this.logger.log(
+        `User \"${userId}\" category limit to ${limit} it was updated successfuly.`
+      );
+      return 1;
+    } catch (error) {
+      this.logger.log(
+        "Updating user resulted with an error: " + error,
+        "error"
+      );
+      return 0;
     }
   }
 }

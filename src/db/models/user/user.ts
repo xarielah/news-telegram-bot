@@ -100,4 +100,40 @@ export default class User {
       return 0;
     }
   }
+
+  /**
+   * Updates a user's sources limit, returns -1 if limit is not a number
+   * Returns 1 if user's source limit is updated successfuly
+   * Returns 0 for any other error
+   * @param userId
+   * @param limit
+   * @returns -1 | 0 | 1
+   */
+  public static async setSourceLimit(
+    userId: number,
+    limit: number | string
+  ): Promise<-1 | 0 | 1> {
+    try {
+      if (isNaN(+limit) || +limit < 1 || +limit > 20) {
+        this.logger.log(
+          `User \"${userId}\" invalid input entered.`,
+          null,
+          null,
+          false
+        );
+
+        return -1;
+      }
+
+      await RegisteredUser.findOneAndUpdate({ userId }, { sourceLimit: limit });
+      this.logger.log(`User \"${userId}\" source limit updated successfuly.`);
+      return 1;
+    } catch (error) {
+      this.logger.log(
+        "Updating user resulted with an error: " + error,
+        "error"
+      );
+      return 0;
+    }
+  }
 }

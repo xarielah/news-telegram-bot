@@ -12,11 +12,7 @@ export default class NewsSource {
    */
   public static async get(userId: number): Promise<SourceRecord> {
     try {
-      const foundSources = await Source.findOne({ userId });
-      if (!foundSources) {
-        await this.create(userId);
-        return await this.get(userId);
-      }
+      const foundSources = await this.findOrCreate(userId);
 
       return foundSources;
     } catch (error) {
@@ -36,20 +32,20 @@ export default class NewsSource {
   private static async create(
     userId: number,
     sources?: string[]
-  ): Promise<boolean> {
+  ): Promise<SourceRecord> {
     try {
       const source = new Source({ userId, sources: sources || [] });
-      await source.save();
+      const newSrc = await source.save({ new: true });
       this.logger.log(
         `Sources record for user ID \"${userId}\" created successfuly.`
       );
-      return true;
+      return newSrc;
     } catch (error) {
       this.logger.log(
         "Creating source resulted with an error: " + error,
         "error"
       );
-      return false;
+      return null;
     }
   }
 
@@ -86,11 +82,7 @@ export default class NewsSource {
    */
   public static async add(userId: number, sourceId: string): Promise<boolean> {
     try {
-      const foundSource = await Source.findOne({ userId });
-      if (!foundSource) {
-        await this.create(userId, [sourceId]);
-        return true;
-      }
+      const foundSource = await this.findOrCreate(userId);
 
       const userSources = foundSource.sources;
       // Source already added
@@ -106,6 +98,10 @@ export default class NewsSource {
     }
   }
 
+  private static async findOrCreate(userId: number): Promise<SourceRecord> {
+    return (await Source.findOne({ userId })) || (await this.create(userId));
+  }
+
   /**
    * Removes a source from the user's sources list
    * @param {string} sourceId
@@ -114,13 +110,7 @@ export default class NewsSource {
 
   public static async remove(userId: number, sourceId: string) {
     try {
-      const foundSource = await Source.findOne({ userId });
-
-      // User sources does not exists
-      if (!foundSource) {
-        await this.create(userId);
-        return true;
-      }
+      const foundSource = await this.findOrCreate(userId);
 
       const userSources = foundSource.sources;
       // Source already removed
@@ -136,6 +126,35 @@ export default class NewsSource {
       return true;
     } catch (_) {
       return false;
+    }
+  }
+
+  /**
+   * Updates a user's sources limit, returns -1 if limit is not a number
+   * Returns 1 if user's source limit is updated successfuly
+   * Returns 0 for any other error
+   * @param userId
+   * @param limit
+   * @returns -1 | 0 | 1
+   */
+  public static async setPageSize(
+    userId: number,
+    limit: number | string
+  ): Promise<0 | 1> {
+    try {
+      // Here we make sure if we don't have source record it'll be created
+      await this.findOrCreate(userId);
+
+      // Update user's source limit
+      await Source.findOneAndUpdate({ userId }, { pageSize: +limit });
+      this.logger.log(`User \"${userId}\" source limit updated successfuly.`);
+      return 1;
+    } catch (error) {
+      this.logger.log(
+        "Updating user resulted with an error: " + error,
+        "error"
+      );
+      return 0;
     }
   }
 }

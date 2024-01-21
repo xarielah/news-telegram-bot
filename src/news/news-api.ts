@@ -8,6 +8,18 @@ import { Article, NewsFetchResponse } from "./news-api.type";
 export default class NewsAPI {
   private static logger = new Logger("NewsAPI");
 
+  public static getCategories(): string[] {
+    return [
+      "business",
+      "entertainment",
+      "general",
+      "health",
+      "science",
+      "sports",
+      "technology",
+    ];
+  }
+
   public static async getCategoryNews(
     userId: number
   ): Promise<NewsFetchResponse> {
@@ -25,6 +37,7 @@ export default class NewsAPI {
 
       const articles: Article[] = [];
 
+      // Only do the ajax calls if the user has categories
       if (userCategories.categories.length > 0) {
         for (let i = 0; i < userCategories.categories.length; i++) {
           const category = userCategories[i];

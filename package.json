@@ -2,7 +2,7 @@
   "name": "tl-bot",
   "version": "1.0.0",
   "description": "A simple cron-job based telegram bot that sends news to a database of subscribed users.",
-  "main": "index.js",
+  "main": "./dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "start tsc -w && nodemon dist/main.js",
