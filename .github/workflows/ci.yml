@@ -19,6 +19,7 @@ jobs:
         run: |
           touch .env
           echo "${{secrets.PRD_ENV}}" > .env
+          cat .env
 
       - name: Clean Install
         run: npm ci
