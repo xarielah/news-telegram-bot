@@ -38,20 +38,15 @@ export default class NewsAPI {
         result.totalResults = articles.length;
       }
 
-      await AuditAction.add({
-        initiator: "NewsAPI",
-        action: "getCategoryNews",
-        target: userId.toString(),
-        result: "success",
-      });
+      this.logger.log(
+        `fetched ${result.articles.length} category articles for user \"${userId}\" successfully.`
+      );
       return result;
     } catch (error) {
-      await AuditAction.add({
-        initiator: "NewsAPI",
-        action: "getCategoryNews",
-        target: userId.toString(),
-        result: "failed",
-      });
+      this.logger.log(
+        "Getting category news resulted with an error: " + error,
+        "error"
+      );
     }
   }
 
@@ -65,21 +60,11 @@ export default class NewsAPI {
         userSources.pageSize
       );
 
-      await AuditAction.add({
-        initiator: "NewsAPI",
-        action: "getSourceNews",
-        target: userId.toString(),
-        result: "success",
-      });
-
+      this.logger.log(
+        `fetched ${result.articles.length} source articles for user \"${userId}\" successfully.`
+      );
       return result;
     } catch (error) {
-      await AuditAction.add({
-        initiator: "NewsAPI",
-        action: "getSourceNews",
-        target: userId.toString(),
-        result: "failed",
-      });
       this.logger.log("Getting source news resulted with an error: " + error);
     }
   }

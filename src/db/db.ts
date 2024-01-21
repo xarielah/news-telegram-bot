@@ -11,11 +11,16 @@ export class MongodbConnection {
 
   static async connect(): Promise<typeof mongoose> {
     mongoose.connection.on("connected", () => {
-      this.logger.log("Initiated connection to MongoDB cluster");
+      this.logger.log(
+        "Initiated connection to MongoDB cluster",
+        null,
+        null,
+        false
+      );
     });
 
     mongoose.connection.on("disconnected", () => {
-      this.logger.log("Disconnected from MongoDB cluster");
+      this.logger.log("Disconnected from MongoDB cluster", null, null, false);
     });
 
     mongoose.connection.on("error", (error) => {

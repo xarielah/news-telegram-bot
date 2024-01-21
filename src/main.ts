@@ -17,7 +17,7 @@ app.use("/", (_, res) => {
 });
 
 app.listen(PORT, async () => {
-  logger.log(`Server running on port ${PORT}`);
+  logger.log(`Server running on port ${PORT}`, null, null, false);
 
   // Responsible for connecting to the database and caching the connection in memory
   await MongodbConnection.connect();

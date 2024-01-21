@@ -6,7 +6,12 @@ export default class CronJob {
   private static logger = new Logger("CronJob");
 
   public static async run() {
-    this.logger.log("Cron job has been triggered and running...");
+    this.logger.log(
+      "Cron job has been triggered and running...",
+      null,
+      null,
+      false
+    );
 
     const api = new TelegramAPI();
     api.me();

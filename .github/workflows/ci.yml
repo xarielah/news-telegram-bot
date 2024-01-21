@@ -1,0 +1,30 @@
+name: CI Workflow
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          cache: "npm"
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "${{secrets.PRD_ENV}}" >> .env
+
+      - name: Clean Install
+        run: npm ci
+
+      - name: Compile Typescript into a dist folder
+        run: npm run compile
+
+      - name: Run production build
+        run: npm run prod

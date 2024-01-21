@@ -1,5 +1,4 @@
 import User from "../db/models/user/user";
-import { RegisteredUser } from "../db/models/user/user.model";
 import { RegisterUser } from "../db/models/user/user.type";
 import Logger from "../logger/logger";
 import NewsAPI from "../news/news-api";
