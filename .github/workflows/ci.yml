@@ -13,13 +13,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Node
         uses: actions/setup-node@v3
-        with:
-          cache: "npm"
-      - name: Create .env file
-        run: |
-          touch .env
-          echo "${{secrets.PRD_ENV}}" > .env
-          cat .env
 
       - name: Clean Install
         run: npm ci
