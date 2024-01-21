@@ -20,7 +20,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-
+      - name: Environment Vars
+        env:
+          PRD_ENV: ${{ secrets.PRD_ENV }}
+        run: |
+          touch .env
+          echo "$PRD_ENV" > ".env"
       - name: Clean Install
         run: npm ci
 
