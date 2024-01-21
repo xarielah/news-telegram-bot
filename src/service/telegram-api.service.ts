@@ -132,7 +132,10 @@ export default class TelegramAPI {
         `Usage: /setsourcelimit <1-20>`
       );
     }
-    const result = await NewsSource.setPageSize(msg.from.id, limit);
+    const result = await NewsSource.setPageSize(
+      msg.from.id,
+      Math.floor(+limit)
+    );
 
     if (result === 1) {
       TelegramAPI.bot.sendMessage(
@@ -159,7 +162,10 @@ export default class TelegramAPI {
       );
       return;
     }
-    const result = await NewsCategory.setPageSize(msg.from.id, limit);
+    const result = await NewsCategory.setPageSize(
+      msg.from.id,
+      Math.floor(+limit)
+    );
 
     if (result === 1) {
       TelegramAPI.bot.sendMessage(
