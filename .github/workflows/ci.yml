@@ -26,5 +26,5 @@ jobs:
       - name: Compile Typescript into a dist folder
         run: npm run compile
 
-      - name: Run production build
-        run: npm run prod
+      - name: Restart production process
+        run: pm2 restart NewsBot
